@@ -53,13 +53,6 @@
     {
       "new_sqlite_classes": ["Sandbox"],
       "tag": "v1",
-    },
-
-    {
-      "tag": "v2",
-      "renamed_classes": [
-        { "from": "moltbot-sandbox_Sandbox", "to": "Sandbox" }
-      ]
     }
   ],
   // R2 bucket for persistent storage (moltbot data, conversations, etc.)
