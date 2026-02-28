@@ -51,7 +51,7 @@
   "kv_namespaces": [
     {
       "binding": "MRPASTA_KV",
-      "id": "REPLACE_WITH_YOUR_MRPASTA_KV_NAMESPACE_ID",
+      "id": "5579eca4f4ae4d558fe3fff4f712add3",
     },
   ],
   // Container configuration for the Moltbot sandbox
