@@ -32,6 +32,28 @@
   "build": {
     "command": "npm run build",
   },
+  // ─── ADDED: Cron triggers ─────────────────────────────────────────────────
+  // ALL TIMES ARE UTC. AEST = UTC+10 | AEDT = UTC+11 (Oct–Apr daylight saving)
+  //
+  // ⚠️  Currently AEDT (UTC+11). DST ends first Sunday of April 2026.
+  //     After DST ends, update to AEST offsets (comments show AEST values).
+  "triggers": {
+    "crons": [
+      "0 4 * * 4",    // Thursday 3:00 PM AEDT  → Strategic Buffer Brief   [AEST: "0 5 * * 4"]
+      "23 23 * * 4",  // Friday   10:23 AM AEDT  → Last Call                [AEST: "0 0 * * 5"]
+      "23 21 * * *",  // Daily    8:23 AM AEDT   → Morning Heartbeat        [AEST: "23 22 * * *"]
+      "0 6 * * *",    // Daily    5:00 PM AEDT   → Evening Heartbeat        [AEST: "0 7 * * *"]
+    ],
+  },
+  // ─── ADDED: KV Namespace ──────────────────────────────────────────────────
+  // Used for atomic task ID counter and small runtime state flags.
+  // To get the ID: npx wrangler kv namespace list
+  "kv_namespaces": [
+    {
+      "binding": "MRPASTA_KV",
+      "id": "REPLACE_WITH_YOUR_MRPASTA_KV_NAMESPACE_ID",
+    },
+  ],
   // Container configuration for the Moltbot sandbox
   "containers": [
     {
@@ -59,42 +81,39 @@
   "r2_buckets": [
     {
       "binding": "MOLTBOT_BUCKET",
-      "bucket_name": "moltbot-data","preview_bucket_name": "moltbot-data",
+      "bucket_name": "moltbot-data",
+      "preview_bucket_name": "moltbot-data",
     },
   ],
-
   // Browser Rendering binding for CDP shim
   "browser": {
     "binding": "BROWSER",
   },
-  // Note: CF_ACCOUNT_ID should be set via `wrangler secret put CF_ACCOUNT_ID`
-  // Secrets to configure via `wrangler secret put`:
+  // Secrets configured via `wrangler secret put`:
   //
-  // AI Provider (at least one set required):
-  // - ANTHROPIC_API_KEY: Direct Anthropic API key
+  // AI Provider:
+  // - ANTHROPIC_API_KEY: Direct Anthropic API key         ✅ already set
   // - OPENAI_API_KEY: Direct OpenAI API key
-  // - Cloudflare AI Gateway (alternative to direct keys):
-  //   - CLOUDFLARE_AI_GATEWAY_API_KEY: API key for requests through the gateway
-  //   - CF_AI_GATEWAY_ACCOUNT_ID: Your Cloudflare account ID
-  //   - CF_AI_GATEWAY_GATEWAY_ID: Your AI Gateway ID
-  // - Legacy AI Gateway (still supported):
-  //   - AI_GATEWAY_API_KEY: API key
-  //   - AI_GATEWAY_BASE_URL: Gateway endpoint URL
+  // - CLOUDFLARE_AI_GATEWAY_API_KEY / CF_AI_GATEWAY_ACCOUNT_ID / CF_AI_GATEWAY_GATEWAY_ID
+  // - AI_GATEWAY_API_KEY / AI_GATEWAY_BASE_URL (legacy)
   //
   // Authentication:
-  // - MOLTBOT_GATEWAY_TOKEN: Token to protect gateway access
-  // - CF_ACCESS_TEAM_DOMAIN: Cloudflare Access team domain
-  // - CF_ACCESS_AUD: Cloudflare Access application audience
+  // - MOLTBOT_GATEWAY_TOKEN                               ✅ already set
+  // - CF_ACCESS_TEAM_DOMAIN                               ✅ already set
+  // - CF_ACCESS_AUD                                       ✅ already set
   //
-  // Chat channels (optional):
+  // R2 storage:
+  // - R2_ACCESS_KEY_ID                                    ✅ already set
+  // - R2_SECRET_ACCESS_KEY                                ✅ already set
+  // - CF_ACCOUNT_ID                                       ✅ already set
+  // - R2_BUCKET_NAME                                      ✅ already set
+  //
+  // Container behaviour:
+  // - SANDBOX_SLEEP_AFTER                                 ✅ already set (set to "30m")
+  //
+  // Chat channels (optional, add when needed):
   // - TELEGRAM_BOT_TOKEN, DISCORD_BOT_TOKEN, SLACK_BOT_TOKEN, SLACK_APP_TOKEN
   //
   // Browser automation (optional):
-  // - CDP_SECRET: Shared secret for /cdp endpoint authentication
-  // - WORKER_URL: Public URL of the worker
-  //
-  // R2 persistent storage (optional, for data persistence across sessions):
-  // - R2_ACCESS_KEY_ID: R2 access key ID (from R2 API tokens)
-  // - R2_SECRET_ACCESS_KEY: R2 secret access key (from R2 API tokens)
-  // - CF_ACCOUNT_ID: Your Cloudflare account ID (for R2 endpoint URL)
+  // - CDP_SECRET, WORKER_URL
 }
