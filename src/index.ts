@@ -7,7 +7,7 @@
  * Features:
  * - Web UI (Control Dashboard + WebChat) at /
  * - WebSocket support for real-time communication
- * - Admin UI at /_admin/ for device management
+ * - Admin UI at /_admin/ for device managementh
  * - Configuration via environment secrets
  *
  * Required secrets (set via `wrangler secret put`):
@@ -35,6 +35,15 @@ import configErrorHtml from './assets/config-error.html';
 /**
  * Transform error messages from the gateway to be more user-friendly.
  */
+
+/**
+ * Returns true if the given WebSocket close code is valid to send programmatically.
+  * Codes 1006 and 1015 are reserved and must never be sent by an application.
+   */
+function isValidCloseCode(code: number): boolean {
+    return (code >= 1000 && code <= 1003) || (code >= 1007 && code <= 1011) || (code >= 3000 && code <= 4999);
+}
+
 function transformErrorMessage(message: string, host: string): string {
   if (message.includes('gateway token missing') || message.includes('gateway token mismatch')) {
     return `Invalid or missing token. Visit https://${host}?token={REPLACE_WITH_YOUR_TOKEN}`;
@@ -390,7 +399,7 @@ app.all('*', async (c) => {
       if (debugLogs) {
         console.log('[WS] Client closed:', event.code, event.reason);
       }
-      containerWs.close(event.code, event.reason);
+      containerWs.close(isValidCloseCode(event.code) ? event.code : 1000, event.reason);
     });
 
     containerWs.addEventListener('close', (event) => {
